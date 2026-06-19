@@ -52,8 +52,13 @@ Present this unified template for them to fill:
 🛠️ Tech Expertise: [e.g., Python, React, AWS - optional]
 🎯 Purpose: [1. Personal PKM / 2. Work / 3. Learning / 4. Mixed]
 
-📁 Folder Structure: [1. PARA (Recommended) / 2. Custom]
-   * If Custom, list folders with short purposes (e.g., "Work: Projects and tasks, Read: Books and articles")
+📁 Folder Topology: [Topic-based folders, e.g., "Work: client projects and tasks",
+   "Personal: side projects and hobbies", "Reading: books and articles"]
+   * PARA categorization (project/area/resource/archive) is applied later as metadata
+     per-folder via `_index.yml` + CLAUDE.md frontmatter (`para:` field) — not by
+     physically naming or restructuring folders into Projects/Areas/Resources/Archive.
+     Any topical folder can hold a project, an area, or a resource depending on what's
+     actually inside it; status can change without moving files. See `para classify`.
 
 📅 Daily Notes:
    * Folder Name: [Default: Daily]
@@ -99,7 +104,7 @@ Next, ask the user if they want to automate the follow-up skeleton creation:
 ✅ CLAUDE.md created successfully.
 
 Would you like to auto-create the recommended folders and memory system?
-   a. Create both PARA/Custom folders and _brain/ skeleton (Recommended)
+   a. Create both topical folders and _brain/ skeleton (Recommended)
    b. Create folders only (with .gitkeep)
    c. Create _brain/ memory system skeleton only
    d. Skip
@@ -107,7 +112,7 @@ Would you like to auto-create the recommended folders and memory system?
 Choose (a/b/c/d):
 ```
 
-**If creating folders:** Create the folders chosen in Step 2. Place a `.gitkeep` file in each folder so it is tracked by git.
+**If creating folders:** Create the topical folders defined in Step 2. Place a `.gitkeep` file in each folder so it is tracked by git. Do not name or restructure folders as `Projects/`, `Areas/`, `Resources/`, `Archive/` — PARA state is assigned later, per-context, as metadata (not as physical folder location).
 **If creating _brain/:** Create the following files with standard metadata:
 - `_brain/North Star.md` (Goals & focus)
 - `_brain/Gotchas.md` (Pitfalls to avoid)
@@ -140,7 +145,7 @@ Provide a final summary:
 Created:
    - CLAUDE.md (Vault root configuration)
    - _index.yml (PARA index, empty — ready for obs-ctx init)
-   - [Folders created, e.g., Projects/, Areas/, Resources/, Archive/, Daily/]
+   - [Topical folders created, e.g., Work/, Personal/, Reading/, Daily/]
    - [_brain/ skeleton files - if selected]
 
 Next steps:
@@ -242,7 +247,7 @@ journal-end-date: YYYY-MM-DD
 
 - **Preview before writing** — never overwrite CLAUDE.md without confirmation
 - **Default values** — if the user skips an optional field, use the default (`Daily/`, `YYYY-MM-DD`)
-- **Folder topology** — if PARA is chosen, use the standard PARA table; if custom, build from user input collected in Step 2.
+- **Folder topology** — always build from the topic-based folders the user described in Step 2. Never propose or create folders literally named `Projects/`, `Areas/`, `Resources/`, `Archive/` — PARA is a metadata classification (`para:` field + `_index.yml`), not a folder naming scheme.
 - **`_index.yml` is mandatory, not optional** — unlike folders and `_brain/`, always create it via `vault.js index init`. `obs-ctx init` will fail without it.
 - **No project registration** — this skill only sets up the vault root + empty index; registering individual projects is handled by `obs-ctx init`
 - **`_brain/` is optional** — do not create it without offering the choice first

@@ -34,7 +34,9 @@ obs-init
 ```
 
 This creates the vault root `CLAUDE.md`, the empty `_index.yml` PARA index, and (optionally)
-the `_brain/` memory skeleton and PARA folder structure.
+the `_brain/` memory skeleton and your topic-based folders. PARA state (project/area/resource/
+archive) is metadata on each folder's `_index.yml` entry and CLAUDE.md frontmatter — not a
+physical `Projects/`/`Areas/`/`Resources/`/`Archive/` folder layout.
 
 ## Skills
 
