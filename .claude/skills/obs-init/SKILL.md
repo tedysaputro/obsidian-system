@@ -5,7 +5,9 @@ description: >
   Initialize an Obsidian vault with Claude Code integration. Creates a root
   CLAUDE.md containing owner context, folder structure, daily notes config,
   and memory system setup, plus the `_index.yml` PARA index that obs-ctx and
-  para depend on. Run once when setting up a new vault.
+  para depend on. Optionally generates onboarding docs (Getting Started/) that
+  walk through creating a project, switching context, daily sessions, and goal
+  tracking with this framework's own skills. Run once when setting up a new vault.
 trigger:
   - obs-init
   - vault init
@@ -136,6 +138,38 @@ tags:
 
 ---
 
+### Step 4b — Offer Onboarding Docs
+
+Ask, regardless of what was chosen in Step 4:
+```
+📘 Want me to generate onboarding docs — how to create a new project, switch context,
+   run a daily session, and track goals with this framework?
+
+Generate onboarding docs? (y/n)
+```
+
+If `y`, ask which language to write them in before generating anything:
+```
+🌐 What language should the onboarding docs be written in?
+```
+
+Don't guess this from the conversation so far — ask explicitly, then:
+1. Load `references/onboarding-templates.md`
+2. Generate each file it describes into `Getting Started/` at the vault root, filling
+   placeholders from the choices already made in Step 2 (folder names, daily-notes config)
+   and from the skills actually present in `.claude/skills/` — skip any section describing
+   a skill that isn't in this copy of the framework
+3. **Write in the language the user picked** — the templates in
+   `references/onboarding-templates.md` are English structural references, not literal
+   output. Translate headings, prose, and table content into the chosen language; keep
+   skill names, trigger phrases, commands, and file paths as-is (don't translate
+   `obs-ctx switch` or `_brain/North Star.md`).
+4. No `.gitkeep` needed here — these are real files, not empty folders
+
+If `n` → skip, move to Step 5.
+
+---
+
 ### Step 5 — Final confirmation
 
 Provide a final summary:
@@ -147,10 +181,12 @@ Created:
    - _index.yml (PARA index, empty — ready for obs-ctx init)
    - [Topical folders created, e.g., Work/, Personal/, Reading/, Daily/]
    - [_brain/ skeleton files - if selected]
+   - [Getting Started/ onboarding docs - if selected]
 
 Next steps:
    → Run /obs-ctx init to register your first project.
    → Fill in _brain/North Star.md with your core goals.
+   → Read Getting Started/00 Overview.md for a walkthrough — if generated.
 ```
 
 ---

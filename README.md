@@ -63,7 +63,9 @@ obs-init
 
 Walks you through Owner Context (name, role, expertise), your topic-based folder layout,
 and daily-notes config. Writes the root `CLAUDE.md`, an empty `_index.yml`, and — if you
-opt in — your folders and a `_brain/` skeleton.
+opt in — your folders, a `_brain/` skeleton, and a `Getting Started/` folder with onboarding
+docs (creating a project, switching context, daily sessions, goal tracking) generated for
+this specific vault's setup.
 
 **2. Register your first project.**
 
@@ -99,7 +101,7 @@ monthly/quarterly alignment, and generate a structured action plan per goal.
 
 | Skill | Purpose | Auto-triggers from chat? |
 |---|---|---|
-| `obs-init` | Bootstrap a new vault — root `CLAUDE.md` + `_index.yml` | Yes |
+| `obs-init` | Bootstrap a new vault — root `CLAUDE.md` + `_index.yml`, optional `Getting Started/` onboarding docs | Yes |
 | `obs-ctx` | Switch between project contexts, save session progress, fix CLAUDE.md/context.md drift | Yes |
 | `para` | Classify, review, and archive folders by PARA lifecycle state | No — manual or called by `obs-ctx` |
 | `obs-session` | Morning briefing (git + daily note + tasks) and end-of-session wrap-up review | Yes |
