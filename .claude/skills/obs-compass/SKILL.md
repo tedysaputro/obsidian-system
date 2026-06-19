@@ -4,10 +4,13 @@ type: skill
 description: >
   Review whether actual activity is aligned with Goals and the North Star. Can
   write/update the North Star and Goal files based on a request or a
-  recommendation derived from memory.
+  recommendation derived from memory. Can also generate a structured action
+  plan (gap analysis, milestones, accountability) for an existing goal —
+  no separate skill needed.
 
   Trigger: "obs-compass", "review goals", "check alignment", "update north
-  star", "add a goal", "am I on track", "how's progress going", or via a
+  star", "add a goal", "am I on track", "how's progress going", "make a plan
+  for this goal", "career plan", "action plan", "gap analysis", or via a
   weekly/monthly/quarterly cron.
 
   Cron mode: "weekly review", "monthly review", "quarterly review".
@@ -15,14 +18,17 @@ description: >
 
 # obs-compass — North Star & Alignment Review
 
-Three modes based on trigger:
+Four modes based on trigger:
 
 - **Write** — write/update the North Star and Goal files
 - **Review** — check whether actual activity is aligned with Goals
 - **Recommend** — draft the North Star and Goals from memory if not yet filled in
+- **Plan** — generate a structured action plan (gap analysis, milestones, accountability) for one goal
 
 Detect mode from context: if the North Star is empty → default to Recommend. If the
 message contains "update", "add", "write" → Write. If from cron or "check alignment" → Review.
+If the message contains "plan", "career plan", "gap analysis", "milestones" for a specific
+goal → Plan.
 
 ---
 
@@ -97,6 +103,13 @@ AND status != "done"
 > this vault doesn't use TaskNotes, drop that block or replace it with whatever this vault
 > uses to track tasks.
 
+### Step 5: Offer an Action Plan
+
+For each newly created goal, ask:
+> "Want me to draft an action plan for this goal (gap analysis, milestones, accountability)?"
+
+If yes → continue to **Mode: Plan** below with this goal as the target.
+
 ---
 
 ## Mode: Write (Update North Star or Goals)
@@ -129,14 +142,176 @@ If the user is OK with it:
 | {date} | {what changed} | {reason} |
 ```
 
-### Step 5: Offer a Career/Action Plan
+### Step 5: Offer an Action Plan
 
 After a new goal file is created, ask:
-> "Want me to draft an action plan for this goal? If this vault has a dedicated
-> career/goal-planning skill, I can hand off to it with the vault context already gathered."
+> "Want me to draft an action plan for this goal (gap analysis, milestones, accountability)?"
 
-If yes and such a skill exists in this vault → run it with the goal name as an argument so
-generic context-gathering questions get skipped.
+If yes → continue to **Mode: Plan** below with this goal as the target.
+
+---
+
+## Mode: Plan (Goal Action Plan)
+
+Run when:
+- The user explicitly asks: "make a plan for goal X", "career plan", "action plan", "gap analysis"
+- Offered automatically after a new goal is created in Mode: Recommend (Step 5) or Mode: Write (Step 5)
+
+Generates a structured plan — gap analysis, quarterly milestones, action items, accountability
+— and saves it to the goal file's `## Plan` section. No separate skill needed; all the context
+(North Star, Owner Context, goal file) is already read by obs-compass.
+
+### Step 1: Read Goal Context
+
+Read:
+```bash
+cat "_brain/North Star.md" 2>/dev/null
+cat "_brain/Goals/{goal-slug}.md" 2>/dev/null
+```
+
+- Use the North Star statement as **Why This Goal**
+- Use the Owner Context section of the vault root `CLAUDE.md` (role, expertise) as **Current State**
+- If the target goal isn't clear from the trigger → list active goals from `_brain/Goals/` and ask: "Which goal do you want a plan for?"
+- If the goal file already has a `## Plan` section → offer to update the existing plan instead of generating from scratch
+
+### Step 2: Gather Missing Context
+
+Ask only what isn't already answered by the goal file or CLAUDE.md:
+
+**Current State** (skip if already in CLAUDE.md Owner Context):
+- Current role/level
+- Main strengths
+- Relevant experience
+
+**Target State** (skip if already in the goal file's `## Target` section):
+- Specific success criteria
+- Timeline
+- Constraints
+
+### Step 3: Gap Analysis
+
+```markdown
+## Gap Analysis: [Current] → [Target]
+
+### Current State
+- **Level:** [current level]
+- **Strengths:** [key strengths]
+- **Experience:** [relevant experience]
+
+### Target State
+- **Goal:** [specific target]
+- **Timeline:** [target date]
+- **Success Criteria:** [how you'll know you've arrived]
+
+### Gap Assessment
+
+| Dimension | Current | Target | Gap Priority |
+| --------- | ------- | ------ | ------------ |
+| [Skill/area 1] | [level] | [level] | High/Medium/Low |
+| [Skill/area 2] | [level] | [level] | High/Medium/Low |
+| [Experience] | [current] | [needed] | High/Medium/Low |
+```
+
+### Step 4: Generate the Plan
+
+```markdown
+## Plan
+
+### Goal Statement
+[Specific, measurable goal with timeline]
+
+### Why This Goal
+[Connection to the North Star / long-term vision]
+
+### Success Criteria
+- [ ] [Measurable outcome 1]
+- [ ] [Measurable outcome 2]
+- [ ] [Measurable outcome 3]
+
+### Timeline
+**Start:** [date]
+**Target Completion:** [date]
+**Duration:** [X months]
+
+### Quarterly Milestones
+
+**Q1: [Focus Area]**
+- [ ] [Specific milestone]
+- Checkpoint: [how to assess progress]
+
+**Q2: [Focus Area]**
+- [ ] [Specific milestone]
+- Checkpoint: [how to assess progress]
+
+**Q3: [Focus Area]**
+- [ ] [Specific milestone]
+- Checkpoint: [how to assess progress]
+
+**Q4: [Focus Area]**
+- [ ] [Specific milestone]
+- Checkpoint: [how to assess progress]
+
+### Action Plan
+
+**High Priority Actions:**
+1. **[Action]** — By [date]
+   - Why: [connection to goal]
+   - Resources: [what's needed]
+
+**Supporting Actions:**
+- [Action] — [Timeframe]
+
+### Quick Wins (Start This Week)
+- [ ] [Something achievable immediately]
+
+### Resources Needed
+- **Learning:** [courses, books, mentors]
+- **Experiences:** [projects, stretch assignments]
+- **Support:** [manager, mentor, sponsor]
+- **Time:** [hours/week commitment]
+
+### Accountability
+
+**Share With:**
+- Manager: [conversation to have]
+- Mentor: [support to request]
+- Peer: [accountability partner]
+
+**Check-in Cadence:**
+- Weekly: [self-review activity]
+- Monthly: [review meeting with...]
+- Quarterly: [milestone assessment]
+
+### Risks and Mitigations
+
+| Risk | Likelihood | Impact | Mitigation |
+| ---- | ---------- | ------ | ---------- |
+| [Risk 1] | H/M/L | H/M/L | [Plan] |
+
+### Adjustment Triggers
+
+Reassess this plan if:
+- [ ] Major change in role or company
+- [ ] Significant feedback changes direction
+- [ ] A new opportunity or obstacle emerges
+- [ ] Progress is significantly ahead of or behind schedule
+```
+
+### Step 5: Preview and Confirm
+
+Show the full Gap Analysis + Plan draft. Ask:
+> "Here's a draft plan for [goal]. Want to edit it first, or save as-is?"
+
+Don't write anything before the user signs off.
+
+### Step 6: Save to the Goal File
+
+If the user is OK with it:
+1. If the goal file already exists at `_brain/Goals/{goal}.md` → append/update its `## Plan` section (the Gap Analysis can go in as a sub-section of `## Plan` or as its own section right before it)
+2. If the goal file doesn't exist yet → create it first via **Mode: Recommend** or **Mode: Write**, then save the plan
+
+Don't create a new file outside `_brain/Goals/` — every plan lives in its goal file so
+obs-compass (Mode: Review) can read the quarterly milestones during alignment checks.
 
 ---
 
