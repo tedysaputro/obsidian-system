@@ -135,6 +135,10 @@ obs-ctx (init/fix)     ──────► para         (PARA state classifica
 
 obs-compass (new goal) ──────► obs-compass Mode: Plan  (gap analysis + action plan,
                                                           same skill, different mode)
+                                       │
+                                       ▼
+                                  obs-task            (turn plan action items into
+                                                        real tasks, offered per item)
 ```
 
 Two rules that keep this from turning into a tangle:

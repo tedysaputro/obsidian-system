@@ -313,6 +313,41 @@ If the user is OK with it:
 Don't create a new file outside `_brain/Goals/` — every plan lives in its goal file so
 obs-compass (Mode: Review) can read the quarterly milestones during alignment checks.
 
+### Step 7: Offer to Create Tasks
+
+A freshly saved plan has actionable items that are still just text, not real tasks. Extract
+candidates from the plan:
+- Every item under **Quick Wins (Start This Week)**
+- Every item under **High Priority Actions** (with its "By [date]" if present)
+
+Show them and ask:
+```
+📋 This plan has a few action items. Want me to create tasks for any of them?
+
+Quick Wins:
+  1. [item]
+  2. [item]
+
+High Priority Actions:
+  3. [item] — by [date]
+  4. [item] — by [date]
+
+Pick (number/space-separated/'all'/'skip'):
+```
+
+For each item picked → run the `obs-task` skill with context already gathered:
+- `title` = the item's text
+- `goal` = this goal (already known, skip obs-task's goal question)
+- `due` = the item's date, if any
+- `priority` = `high` for High Priority Actions, `normal` for Quick Wins
+
+obs-task still runs its normal flow (preview + confirmation per task) — obs-compass only
+triggers it, it doesn't write the task file directly. obs-task remains the only skill
+allowed to write to `TaskNotes/Tasks/` (see `## Task Sync` below).
+
+If the user says `skip` → no tasks created; the plan stays as text in the goal file to be
+converted manually later.
+
 ---
 
 ## Mode: Review (Alignment Check)
