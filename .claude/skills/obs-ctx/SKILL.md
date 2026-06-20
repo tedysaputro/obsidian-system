@@ -65,7 +65,7 @@ Trigger: project not yet in the vault index.
    - **CLAUDE.md exists** → read its content, do not overwrite
    - **context.md missing** → create via script: `node .claude/scripts/vault.js ctx init "<folder>"`
    - **context.md exists** → read its content, ask user before overwriting
-   - **`para: project` or `area` and `resources:` empty** → run resource suggestion (see `references/fix-procedure.md` item 7)
+   - **`para: project` or `area` and `resources:` empty** → run resource suggestion flow (see Fix flow below)
 4. Register in the index:
    ```
    node .claude/scripts/vault.js index add "<name>" "<folder>"
@@ -81,26 +81,30 @@ Trigger: project not yet in the vault index.
 > Move focus to a different project — load the CLAUDE.md chain + context.md, show PARA state and open items.
 > This is the main mode used at the start of every work session.
 
-1. Read the list of indexed projects:
-   ```
-   node .claude/scripts/vault.js index list
-   ```
-2. Display the list — user picks
-3. Load project data:
+1. If `<name>` is already given → skip straight to step 2 (skip the list).
+   If not → list: `node .claude/scripts/vault.js index list --names` (compact mode — saves ~1.7k tokens vs full JSON), user picks.
+2. Load project data:
    ```
    node .claude/scripts/vault.js index get <name>   # para, folder, parent
-   node .claude/scripts/vault.js ctx read <name>    # status, open items, last session
+   node .claude/scripts/vault.js ctx read <name>    # status, 5 open items, 3 most recent sessions
    ```
+   Default `ctx read` caps at 5 open items (open only — `[x]` items are skipped) + 3 most recent sessions.
+   The `openItemsCount`/`openItemsCapped` fields flag if there are more; `doneItemsCount` covers `[x]` items.
+   Override: `ctx read <name> --open-limit N` (0 = all), `--recent N` (0 = no sessions).
    Read CLAUDE.md **directly** — the script cannot analyze content
-4. Read documents referenced in open items:
+3. Read documents referenced in open items:
    - Check for `[[Doc]]` format, backtick path, or `per <filename>`
    - Prioritize the most authoritative document (status/planning doc > raw backlog)
-5. Build the chain: walk up from the project folder to root, collecting all CLAUDE.md files found
-6. Run inconsistency detection → see `references/inconsistency-checks.md`
-7. Extract the `resources:` field from CLAUDE.md frontmatter — if present, display it and note it
+4. Build the chain: walk up from the project folder to root, collecting all CLAUDE.md files found
+5. Run mechanical anomaly detection via script (read-only, compact JSON output):
+   ```
+   node .claude/scripts/vault.js diagnose <name>
+   ```
+   Display a summary of anomaly codes. Semantic checks (static-vs-dynamic content, text duplication) remain the responsibility of `obs-ctx fix`.
+6. Extract the `resources:` field from CLAUDE.md frontmatter — if present, display it and note it
    as the first reference when answering questions within this context.
 
-8. Display confirmation:
+7. Display confirmation:
 
 ```
 ✅ Context loaded: My Project
@@ -133,12 +137,20 @@ Fix now? (y/skip)
 
 Trigger: explicit, or auto-triggered when switch/save detects an issue.
 
-1. Read `references/oop-hierarchy.md` — load the `@Final` and `@Abstract` definitions
-2. Read `references/inconsistency-checks.md` — check at project level and chain level
-3. Display the diagnosis with numbered items
-4. Wait for confirmation `y` / `skip`
-5. If `y` → run `references/fix-procedure.md` (Phase 1 first, then Phase 2)
-6. Show the diff per item, confirm before writing
+1. Run `node .claude/scripts/vault.js diagnose <name>` → get anomaly codes
+2. Mechanical anomalies → resolve via existing commands:
+   - `missing_context` → `vault.js ctx init`
+   - `para_drift` → `vault.js para set <state>`
+   - `para_unknown` → `/para classify`
+   - `missing_area` / `invalid_area` → set during init
+   - `missing_memory_section` / `missing_child_contexts_section` → Claude adds the missing section to CLAUDE.md
+   - **Resource suggestion flow** (`missing_resources`): scan `index list` filter `para: resource`, cross-match domain with project, show suggestions, confirm, then write `resources:` to CLAUDE.md frontmatter.
+   Show diff per item, confirm before writing.
+3. Semantic anomalies (static-vs-dynamic content, text duplication, `@Final` identical-vs-different, content migration context.md↔CLAUDE.md):
+   - Read `references/inconsistency-checks.md` + `references/fix-procedure.md` — full procedure guide
+   - Read `references/oop-hierarchy.md` — load `@Final` and `@Abstract` definitions
+   - Claude reads both files (CLAUDE.md + context.md), judges manually, confirms per item.
+4. Show the diff per item, confirm before writing
 
 ---
 
@@ -147,8 +159,8 @@ Trigger: explicit, or auto-triggered when switch/save detects an issue.
 > Scan the CLAUDE.md chain from root to the active project — validate @Final, @Abstract, PARA
 > state, and index paths. Read-only: makes no changes. Used for a health check before or after fix.
 
-1. Read `references/oop-hierarchy.md` — load the `@Final` and `@Abstract` definitions
-2. Scan the CLAUDE.md chain from root → active project. Makes no changes.
+1. Read `references/oop-hierarchy.md` — load `@Final` and `@Abstract` definitions (for interpretation of @Final/@Abstract results)
+2. Run `node .claude/scripts/vault.js diagnose <name>` — check mechanics via script. Makes no changes.
 
 | Check | Pass | Fail |
 |---|---|---|
