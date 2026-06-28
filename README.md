@@ -109,9 +109,8 @@ monthly/quarterly alignment, and generate a structured action plan per goal.
 | `obs-sync` | Reconcile sub-task checklists across task files, daily notes, and context.md | No — called by `obs-session`, `obs-compass`, `obs-task` |
 | `obs-compass` | Review activity against goals/North Star; weekly/monthly/quarterly cadence; generate a structured action plan (gap analysis, milestones, accountability) per goal | Yes |
 | `obs-audit` | Vault-wide health scan — broken links, orphan notes, stale context, root clutter | Yes |
-| `obs-wiki` | Build and grow a living, topic-structured wiki from any vault source | Yes |
+| `obs-wiki` | Build and grow a living, topic-structured wiki from any vault source; ingest, query, lint (broken links, orphans, missing inline wikilinks, terminology, contradictions), and extract | Yes |
 | `obs-base` | Create and edit Obsidian `.base` files — table/card views, filters, formulas | Yes |
-| `build-wiki` / `lint-wiki` | Earlier wiki-building tools, kept for now alongside `obs-wiki` — not yet reconciled | Yes |
 
 Each skill is a `.claude/skills/<name>/SKILL.md`, optionally with a `references/` folder for
 material that's loaded on demand rather than every time.
@@ -195,6 +194,4 @@ not installed:
 
 ## Status
 
-Actively being ported and generalized from a personal vault. Some skills still have
-unreconciled overlap (`obs-wiki` vs `build-wiki`) or drift between this repo and the source
-vault — see `.claude/skills/*/SKILL.md` for the current state of each. No LICENSE file yet.
+Actively being ported and generalized from a personal vault. No LICENSE file yet.
