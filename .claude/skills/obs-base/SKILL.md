@@ -1,6 +1,15 @@
 ---
 name: obs-base
-description: Create and edit Obsidian Bases (.base files) with views, filters, formulas, and summaries. Use when working with .base files, creating database-like views of notes, or when the user mentions Bases, table views, card views, filters, or formulas in Obsidian.
+type: skill
+description: >
+  Create and edit Obsidian Bases (.base files) — database-like views of vault
+  notes using filters, formulas, views (table/cards/list/map), and summaries.
+
+  Trigger when the user mentions: "create a base", "edit base", ".base file",
+  "table view", "card view", "filter notes", "formula in Obsidian", "Obsidian
+  Bases", or asks to build a dynamic view of their notes.
+
+  Mode: Claude Code only — reads vault structure, writes .base files directly.
 ---
 
 # Obsidian Bases Skill

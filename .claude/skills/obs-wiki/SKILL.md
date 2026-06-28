@@ -8,7 +8,9 @@ description: >
   extract, a lens system).
 
   Trigger: "obs-wiki", "build a wiki from", "ingest into the wiki", "add to the
-  wiki", "query the wiki", or a topic followed by "wiki".
+  wiki", "query the wiki", "lint wiki", "audit wiki", "check wiki links",
+  "fix broken links", "find orphan notes", "wiki consistency check",
+  or a topic followed by "wiki".
 
   Mode: Claude Code only.
 ---
@@ -364,19 +366,65 @@ Two modes — auto-detected from the shape of the input:
 
 ### `/obs-wiki:lint` — Health Check
 
-Check and report, categorized by severity:
+Ask the user if not already clear:
+- Which directory to audit? (default: entire `wiki/`)
+- Full audit or focus on a specific aspect? (All / structural only / content quality only)
+
+**Phase 1 — Scan & catalog (read-only):**
+Build an internal concept map: which concept does each page cover? Collect all existing
+wikilinks, all file paths, and a sample of key claims per note. Don't write anything yet.
+
+**Phase 2 — Identify issues by severity:**
 
 | Severity | Check |
 |---|---|
 | Error | Broken wikilinks (link to a file that doesn't exist) |
 | Error | Incomplete frontmatter (missing `title`, `type`, `sources`, or `created` field) |
-| Warning | Orphan page (no other page links to it inline) |
+| Warning | Orphan page (no incoming AND no outgoing links) |
 | Warning | `00 MOC.md` doesn't list every wiki page |
-| Warning | A source file that's been ingested before but isn't marked `synthesized: true` |
-| Info | `stub` pages (under 100 words) that haven't been developed yet |
+| Warning | Source file marked via ingest but not marked `synthesized: true` |
+| Warning | Missing inline wikilinks — word/phrase explicitly mentions a concept covered by another page, not yet linked. Criteria: the word/phrase must actually exist in the sentence; another page specifically covers that concept; no link already exists there |
+| Info | Stub pages (under 100 words) |
+| Info | Terminology inconsistencies — same concept written different ways across notes (e.g. "control plane" vs "Control Plane" vs "control-plane") |
+| Info | Contradiction candidates — conflicting claims between notes (heuristic; report only) |
 
-Offer an automatic fix for issues that don't require a user decision (simple frontmatter,
-missing MOC entries). For issues that need judgment → just report them.
+**Phase 3 — Present findings, wait for confirmation:**
+
+```
+🔍 Lint Results: wiki/
+
+[Error] Broken Links (N)
+   - 02 Core Concepts/03 Storage.md → [[Persistent Volume]] (file not found)
+
+[Error] Frontmatter Issues (N)
+   - 03 Techniques/01 How To Do Y.md — missing `sources` field
+
+[Warning] Orphan Pages (N)
+   - 05 Reference/Glossary.md — no incoming or outgoing links
+
+[Warning] MOC Coverage (N)
+   - 03 Techniques/02 Advanced Technique.md not listed in 00 MOC.md
+
+[Warning] Missing Inline Wikilinks (N)
+   - 01 Introduction/01 What Is X.md, line 12: "control plane" → [[02 Control Plane]]
+
+[Info] Terminology Inconsistencies (N candidates)
+   - "control plane" (3 notes) vs "Control Plane" (1 note) — suggest canonical: "control plane"
+
+[Info] Contradictions (N candidates)
+   - 01 Introduction.md line 5 vs 02 Core Concepts.md line 12: [description]
+
+Fix all? (y/n) or select category: Broken / Frontmatter / Orphans / MOC / Wikilinks / Terminology / (Contradictions: report only)
+```
+
+**Phase 4 — Apply fixes per category:**
+- **Broken links:** ask whether the target file should be created (stub) or the link removed. Do not auto-delete.
+- **Frontmatter:** auto-fix missing fields where the value can be inferred; ask for values that require judgment.
+- **Orphans:** suggest candidate pages that could naturally link to the orphan; wait for confirmation before editing.
+- **MOC:** auto-add missing entries after confirmation.
+- **Missing inline wikilinks:** auto-add on confirmed word/phrase mappings.
+- **Terminology:** suggest one canonical term, show all locations; wait for confirmation before replacing.
+- **Contradictions:** report only — editorial decisions belong to the user.
 
 ---
 

@@ -53,7 +53,7 @@ Follow up on anomalies? (y/n)
 
 If `y` → route by anomaly type from the JSON:
 - `unclassified` → run `/para classify` for that folder
-- `missing_resources` → run the resource suggestion flow (see `obs-ctx/references/fix-procedure.md` item 7)
+- `missing_resources` → run the resource suggestion flow (see `obs-ctx` Fix flow in SKILL.md)
 - `inactive` → offer to archive (show `inactiveDays` from the JSON)
 - `all_done` → offer to archive
 - `might_be_project` → offer to reclassify as project via `/para classify`
