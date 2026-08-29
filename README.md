@@ -111,6 +111,7 @@ monthly/quarterly alignment, and generate a structured action plan per goal.
 | `obs-audit` | Vault-wide health scan — broken links, orphan notes, stale context, root clutter | Yes |
 | `obs-wiki` | Build and grow a living, topic-structured wiki from any vault source; ingest, query, lint (broken links, orphans, missing inline wikilinks, terminology, contradictions), and extract | Yes |
 | `obs-base` | Create and edit Obsidian `.base` files — table/card views, filters, formulas | Yes |
+| `teachme` | Actively tutor any technical topic — reading plan, doc-validated explanations, quizzes, and real sandboxed coding exercises; state via obs-ctx, durable knowledge to a `wiki/` (obs-wiki) | Yes |
 
 Each skill is a `.claude/skills/<name>/SKILL.md`, optionally with a `references/` folder for
 material that's loaded on demand rather than every time.
