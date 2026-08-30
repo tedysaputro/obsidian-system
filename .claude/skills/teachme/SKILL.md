@@ -47,12 +47,13 @@ Pointers, not specs — the mechanisms belong to obs-ctx / obs-wiki; don't dupli
 | Curriculum progress (topics done/in progress, current position) + active anchor phase | **context.md** (obs-ctx save) |
 | To review (spaced-rep: topic · last reviewed · weak areas) | **context.md** §To Review |
 | Session ledger + session narrative | **context.md** §Last Session + **`_discussion/`** (obs-ctx save) |
+| Active references for the running session (dataset/checkpoint/endpoint currently in use) | **context.md §Active Resources** — empty at init; **NOT** a config home. Sources/sandbox/wiki/toolchain/docs all live in CLAUDE.md |
 | Durable knowledge: concepts, glossary, insights, quizzes, walkthrough records | **`wiki/`** — obs-wiki format |
 | Derived artifacts: flashcards (+Anki) | **`extracts/`** (obs-wiki convention) — derived from study material |
 | Code: anchor project + drills (sandbox) | **`playground_root`** — outside the vault |
 | Cross-project gotchas (tooling/OS/workflow) | **`_brain/Gotchas.md`** — rare |
 
-The **one fact, one home** rule: don't copy status/session into `wiki/`; don't spill personal chronology ("I got this wrong at first…") into `wiki/` — that goes to `_discussion/` + context.md. What enters the wiki is the *knowledge*, neutral and durable.
+The **one fact, one home** rule: don't copy status/session into `wiki/`; don't spill personal chronology ("I got this wrong at first…") into `wiki/` — that goes to `_discussion/` + context.md. What enters the wiki is the *knowledge*, neutral and durable. **And don't copy config into context.md** — sources, sandbox, wiki, toolchain, docs all live in CLAUDE.md (frontmatter + §Mission). The obs-ctx `## Active Resources` section in context.md has a misleading name: it is NOT a twin of `resources:`, only a slot for references active in the running session (dataset/checkpoint/endpoint) — leave it empty at init.
 
 ## Philosophy
 
@@ -71,6 +72,7 @@ The **one fact, one home** rule: don't copy status/session into `wiki/`; don't s
 2. **Activate learning sources.** Reference sources **can be anything** (official docs, books, URLs, a textbook, a vault file) — filled in at init into `resources:` CLAUDE.md frontmatter. If a preload `references/preloads/<topic>.md` exists → seed `resources:` from it (toolchain, calibration too). None → offer research (`references/setup.md` Research Flow) to fill it. `resources:` is the first validation reference each session (INPUT); wiki/extracts are OUTPUT.
 3. **Sandbox & wiki.** Ask for `playground_root` (outside the vault — the vault is markdown-only). Decide `wiki_root` (default `<project>/wiki/`; or point at an existing topic wiki to **enrich**). Write both to CLAUDE.md frontmatter.
 4. **Toolchain.** Check the version; if it fails and the user declines to install → theory mode (note it in CLAUDE.md).
+5. **Write CLAUDE.md + context.md from the `references/templates.md` skeleton — don't improvise sections.** All static config → CLAUDE.md: `resources:` (sources & docs), `playground_root`, `wiki_root`, toolchain flag → frontmatter; §Mission + §Curriculum → body. context.md is created by obs-ctx (empty template); teachme only puts dynamic state there (§Curriculum Progress, §To Review). **Don't write any config into context.md** — `## Active Resources` is not the place for sources/sandbox/wiki/toolchain/docs (see "one fact, one home" above), leave it empty.
 
 Full procedure & Research Flow: `references/setup.md`.
 
@@ -131,6 +133,7 @@ The user drives; validate answers in the same order (§1.3.2); optionally interl
 | `references/teaching-patterns.md` | Concept Introduction Pattern, Debugging as Teaching, Socratic, pacing signals, quiz format, calibration | Before explaining a new concept / when a compile-test fails |
 | `references/project-phases.md` | Anchor-project phases (Bare Bones→Core→Polish→Enhancement), drill vs project | When designing exercises |
 | `references/setup.md` | Delegating setup to obs-ctx + Research Flow (fill `resources:` for a topic with no preload) | ONLY when the topic project doesn't exist yet (§0) |
+| `references/templates.md` | Copy-ready skeleton for CLAUDE.md (frontmatter + §Mission + §Curriculum) & context.md (dynamic-only, §Active Resources empty) | Init writes CLAUDE.md/context.md (§0) |
 | `references/reading-plan.md` | Build a curriculum from scratch → seed `resources:` + §Curriculum in CLAUDE.md | User wants to learn but has no material yet (§0) |
 | `references/study-artifacts.md` | Flashcards (+Anki) → `extracts/`; Bloom-graded quiz → `wiki/` page | Checking understanding for review/checkpoint, or on request |
 | `references/explain-deep.md` | Mathematical & narrative explanation patterns (alternative to the Concept Pattern) | Math-heavy topics / abstract concept still confusing |

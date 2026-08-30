@@ -8,7 +8,8 @@
   - Mac: `brew install go`
   - Linux: package manager (`apt`, `dnf`, etc.) or a tarball from https://go.dev/dl/
 - **Compile:** `go build`, `go run`, `go test`, `go vet`
-- **Playground:** standard Go project (`go.mod` + `main.go`/`cmd/`/`internal/`)
+- **Playground:** standard Go project (`go.mod` + `main.go`/`cmd/`/`internal/`) in `playground_root` (outside the vault)
+- **Frontmatter flag:** check result → write `go_installed: true|false` to CLAUDE.md (`false` = theory mode)
 
 ## Documentation Sources
 
@@ -39,9 +40,11 @@ Target: an engineer coming from Java/Spring/Quarkus — not a programming beginn
 
 **Production framing:** "here's how Docker/Kubernetes/Terraform use this pattern in production" is often more effective than a generic analogy.
 
-## Seed `resources:` CLAUDE.md frontmatter
+## Seed config → CLAUDE.md (not context.md)
 
-At setup, fill the `resources:` field in the topic project's CLAUDE.md frontmatter (obs-ctx) with the sources below. New sources found each session → appended to the same list (no confirmation).
+Everything below is STATIC → CLAUDE.md (frontmatter + §Mission), per `references/templates.md`. context.md is created by obs-ctx (empty template) and stays **config-free** — leave its `## Active Resources` empty, it's not the place for sources/sandbox/toolchain.
+
+Fill the `resources:` field in the CLAUDE.md frontmatter with the sources below. New sources found each session → appended to the same list (no confirmation).
 
 ```yaml
 resources:

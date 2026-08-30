@@ -32,7 +32,7 @@ Ask why the user is learning this topic now + a small **anchor project** idea th
 - **`playground_root`** — folder for the anchor project + drills, **outside the vault**. The vault is markdown-only and often lives in a cloud-synced folder (OneDrive, Dropbox, iCloud, …) — don't put binaries/build config there.
 - **`wiki_root`** — the wiki location (default `<project>/wiki/`; or point at an existing topic wiki to enrich).
 
-Write both to CLAUDE.md frontmatter so the next session doesn't ask again.
+Write both to CLAUDE.md frontmatter so the next session doesn't ask again. **All config (this + `resources:` + toolchain) lives only in CLAUDE.md — don't copy it into context.md; the context.md `## Active Resources` section is not for config, leave it empty at init.**
 
 ---
 

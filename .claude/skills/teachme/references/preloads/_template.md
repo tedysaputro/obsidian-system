@@ -34,9 +34,9 @@ Target: [the user's level + background]. **Can skip:** [basics the user already 
 
 **Effective framing:** "[an ecosystem/production context the user is familiar with]"
 
-## Seed `resources:` CLAUDE.md frontmatter
+## Seed config → CLAUDE.md (not context.md)
 
-At setup, fill the `resources:` field in the topic project's CLAUDE.md frontmatter (obs-ctx). New sources each session → appended to the same list.
+All static config → CLAUDE.md (frontmatter + §Mission), per `references/templates.md`. context.md stays config-free — leave its `## Active Resources` empty. Fill the `resources:` field in the CLAUDE.md frontmatter; new sources each session → appended to the same list.
 
 ```yaml
 resources:
