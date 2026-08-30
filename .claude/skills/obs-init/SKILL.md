@@ -7,7 +7,8 @@ description: >
   and memory system setup, plus the `_index.yml` PARA index that obs-ctx and
   para depend on. Optionally generates onboarding docs (Getting Started/) that
   walk through creating a project, switching context, daily sessions, and goal
-  tracking with this framework's own skills. Run once when setting up a new vault.
+  tracking with this framework's own skills. Offers to put the vault under git
+  (git init + initial commit) if it isn't already. Run once when setting up a new vault.
 trigger:
   - obs-init
   - vault init
@@ -166,7 +167,52 @@ Don't guess this from the conversation so far — ask explicitly, then:
    `obs-ctx switch` or `_brain/North Star.md`).
 4. No `.gitkeep` needed here — these are real files, not empty folders
 
-If `n` → skip, move to Step 5.
+If `n` → skip, move to Step 4c.
+
+---
+
+### Step 4c — Git Integration
+
+Version-controlling the vault is strongly recommended — the memory system (`_brain/`),
+`_index.yml`, and daily notes all benefit from history. Check whether the vault root is
+already a git repository:
+
+```bash
+git rev-parse --is-inside-work-tree 2>/dev/null
+```
+
+**If it is NOT a repo yet**, offer to initialize one:
+```
+🔧 This vault isn't under git yet. Version control keeps a history of your notes,
+   memory (_brain/), and PARA index — and lets obs-ctx save commit each session.
+
+Initialize a git repository here? (y / n)
+```
+- `y` → run `git init`. If no `.gitignore` exists at the vault root, create one that at
+  minimum ignores Obsidian workspace churn and OS cruft:
+  ```gitignore
+  .obsidian/workspace*.json
+  .DS_Store
+  Thumbs.db
+  ```
+  Then offer the initial commit below.
+- `n` → skip git entirely, move to Step 5.
+
+**If it already IS a repo** (or right after `git init`), offer to commit what obs-init just created:
+```
+📦 Commit the initial vault setup? (y / n)
+```
+- `y` → stage only the files this run created, then commit:
+  ```bash
+  git add CLAUDE.md _index.yml _brain/ "Getting Started/" <topical-folders>
+  git commit -m "chore: initialize Obsidian vault with Claude Code integration"
+  ```
+  Stage the created paths explicitly — do **not** blanket `git add -A`, the user may have
+  unrelated files present.
+- `n` → skip the commit.
+
+Never `git push` here — obs-init only sets up local history. Configuring a remote and
+pushing is the user's call.
 
 ---
 
@@ -182,6 +228,7 @@ Created:
    - [Topical folders created, e.g., Work/, Personal/, Reading/, Daily/]
    - [_brain/ skeleton files - if selected]
    - [Getting Started/ onboarding docs - if selected]
+   - [git repository + initial commit - if selected]
 
 Next steps:
    → Run /obs-ctx init to register your first project.
@@ -287,3 +334,6 @@ journal-end-date: YYYY-MM-DD
 - **`_index.yml` is mandatory, not optional** — unlike folders and `_brain/`, always create it via `vault.js index init`. `obs-ctx init` will fail without it.
 - **No project registration** — this skill only sets up the vault root + empty index; registering individual projects is handled by `obs-ctx init`
 - **`_brain/` is optional** — do not create it without offering the choice first
+- **Git is offered, never forced** — check for an existing repo first; only propose `git init`
+  when the vault isn't already versioned. Stage created paths explicitly (no `git add -A`),
+  and never `git push` — remotes are the user's decision

@@ -224,11 +224,35 @@ If all open items are `[x]`:
 ```
 If `y` → run the archive flow via the `/para` skill.
 
+**Step 5 — Git commit (if the vault is a git repo):**
+
+First check whether the vault is under git:
+```bash
+git rev-parse --is-inside-work-tree 2>/dev/null
+```
+If it's not a repo → skip this step (suggest `/obs-init` to run `git init`).
+
+If it is a repo:
+1. `git status --short` — see what changed
+2. Stage **only the files touched in this session** — context.md + discussion + any note/CLAUDE.md edited this session. Never blanket `git add -A`; if `git status` shows unexpected changes outside this session, confirm with the user first — don't stage them silently.
+3. Offer the commit — message derived from the session title (Step 1):
+   ```
+   💾 Commit this session's changes?
+
+       git add <this session's files>
+       git commit -m "[project]: [session title]"
+
+   (y / edit message / n)
+   ```
+4. `y` → commit. `edit` → change the message, then commit. `n` → skip.
+5. **Never `git push` automatically** — push is an outward action; ask for separate explicit confirmation if the user actually wants to push.
+
 **Final confirmation:**
 ```
 ✅ Context saved: [project] → context.md
 ✅ Discussion saved: _discussion/YYYY-MM-DD/[slug].md
 ✅ Wiki note created: [path] (if applicable)
+✅ Committed: [hash] "[commit message]" (if committed)
 ```
 
 ---
@@ -240,6 +264,7 @@ If `y` → run the archive flow via the `/para` skill.
 - **Switch always reads both files** — CLAUDE.md for structure, context.md for state
 - **Project = child context** — a parent context that has child contexts beneath it is skipped during switch
 - **PARA source of truth** = the vault index. CLAUDE.md frontmatter `para:` is a copy, updated via `vault.js para set`
+- **Commit at end of save** — if the vault is a git repo, `obs-ctx save` offers to commit the files touched this session (context.md + discussion + edited notes). Always offer first, never auto-commit; never blanket `git add -A`; never `git push` without separate confirmation. If it's not a repo → skip, suggest `/obs-init`
 - **Resources = first reference** — the `resources:` field is shown at switch. It isn't loaded
   in full, but Claude knows to refer there before answering from training data. Read the relevant
   resource when the user asks something related
