@@ -1,0 +1,24 @@
+{
+  "name": "obsidian-system",
+  "owner": {
+    "name": "Tedy Tri Saputro",
+    "url": "https://github.com/tedysaputro"
+  },
+  "metadata": {
+    "description": "Marketplace catalog for the obsidian-system skill library — run an Obsidian vault as a Claude Code workspace. The plugin and this catalog live in the same repository."
+  },
+  "plugins": [
+    {
+      "name": "obsidian-system",
+      "source": "./",
+      "strict": false,
+      "skills": ["./.claude/skills/"],
+      "description": "Run an Obsidian vault as a Claude Code workspace — 12 skills: context switch, PARA registry, living wiki, health audit, goal-linked tasks, session briefings, compass/goals, .base views, an active tutor, and critical discussion.",
+      "author": {
+        "name": "Tedy Tri Saputro"
+      },
+      "homepage": "https://github.com/tedysaputro/obsidian-system",
+      "keywords": ["obsidian", "pkm", "para", "vault", "knowledge-management"]
+    }
+  ]
+}

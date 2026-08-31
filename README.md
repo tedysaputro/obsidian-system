@@ -11,6 +11,7 @@ de-personalized for reuse in any vault.
 
 - [Core Ideas](#core-ideas)
 - [Requirements](#requirements)
+- [Install as a Plugin](#install-as-a-plugin)
 - [Quick Start](#quick-start)
 - [Skills](#skills)
 - [How Skills Compose](#how-skills-compose)
@@ -47,6 +48,34 @@ de-personalized for reuse in any vault.
 - Everything else (TaskNotes, Dataview) is optional — see
   [Optional Plugin Dependencies](#optional-plugin-dependencies).
 
+## Install as a Plugin
+
+This repo is also a Claude Code plugin marketplace — the catalog
+(`.claude-plugin/marketplace.json`) and the plugin it ships live in this same
+repository, so installing is two commands:
+
+```
+/plugin marketplace add tedysaputro/obsidian-system
+/plugin install obsidian-system@obsidian-system
+```
+
+On install, Claude Code loads the `obs-*` skills from this repo's `.claude/skills/`.
+To pull later skill updates:
+
+```
+/plugin marketplace update obsidian-system
+```
+
+The entry pins `ref: main` with no `version`, so an update tracks the resolved commit
+of `main` — push to this repo, and an update pulls the new skills.
+
+**What the plugin does and does not ship.** The skills invoke the engine via
+`node .claude/scripts/vault.js`, resolved relative to the **vault** working directory —
+not the plugin cache. So the plugin ships the skills only; the target vault must still
+have `.claude/scripts/vault.js` and a root `_index.yml`. Those are created by the
+Quick Start below (`obs-init` / `setup-junction`), which you run once per vault whether
+or not you installed via the plugin.
+
 ## Quick Start
 
 **1. Bootstrap the vault root.**
@@ -54,6 +83,11 @@ de-personalized for reuse in any vault.
 ```bash
 node .claude/setup-junction.js   # cross-platform symlinks for memory + non-Claude agents
 ```
+
+On Windows you can run the pure-PowerShell equivalent instead — `.claude/setup-junction.ps1`
+— if you'd rather not invoke Node for this step. Either is safe to run repeatedly (no-op if
+the links already exist) and is typically triggered automatically via a `UserPromptSubmit`
+hook.
 
 Then, inside Claude Code:
 
@@ -171,12 +205,16 @@ node .claude/scripts/vault.js para get <name-or-folder>
 node .claude/scripts/vault.js para set <name-or-folder> <state>
 
 node .claude/scripts/vault.js scan
+node .claude/scripts/vault.js diagnose <name-or-folder>
 ```
 
 `para set` writes to both `_index.yml` (source of truth) and the folder's `CLAUDE.md`
 frontmatter, if one exists. `scan` walks every registered folder and reports anomalies:
 `unclassified`, `inactive`, `all_done`, `might_be_project`, `missing_context`,
-`missing_resources`, `para_drift`, `residual`, `broken_entry`.
+`missing_resources`, `para_drift`, `residual`, `broken_entry`. `diagnose` zooms into a
+single entry: it walks that folder's CLAUDE.md chain and reports per-entry anomalies
+(`broken_entry`, `para_drift`, `para_unknown`, `missing_area`, `invalid_area`, …) each
+paired with the fix that resolves it — the check `obs-ctx fix` runs under the hood.
 
 `obs-audit`'s vault-wide health check is a separate script, `.claude/scripts/vault_health.py`
 — a single-pass scanner that outputs JSON for broken links, orphan notes, stale
