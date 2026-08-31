@@ -215,6 +215,10 @@ Rules:
 - Read the whole source; for large files (>100KB or >1000 lines) read in logical chunks
 - Read `wiki/00 MOC.md` to identify overlap with existing content
 - Note: what entities, concepts, and techniques this source introduces
+- **Identify non-text elements — two categories, handled differently:**
+  - **Structural visuals** (flow/relationship diagrams — including raw SVG from an export or clipping — and tables): they carry structural information (sequence, branching, side-by-side comparison) → **reconstruct** them as mermaid/markdown in Phase 4.
+  - **Raster images** (hardware/product photos, UI screenshots, labeled figures): can't be "reconstructed into text" → **download & embed** them in Phase 4. For each image, note: what it shows, which section it belongs to, whether it's a **local file or an external URL** (many READMEs/articles hotlink to a CDN — those need downloading), and whether it's informative (a step/hardware/UI) or purely decorative.
+  - **Don't drop** non-text elements as "presentational noise". **Important:** an image can still enrich an **existing page whose text already overlaps** — the text may be skippable because it's already covered, but the photo/screenshot often isn't in the wiki yet and still adds value (don't equate "text overlaps" with "the image is irrelevant").
 - **For a code-project source, also read the guidance below**
 
 **Code-project sources** (a directory containing source code, `pom.xml`/`build.gradle`, etc.):
@@ -257,6 +261,7 @@ wiki/
 For each new file: type, one sentence of the main content it will cover.
 For each updated file: what changes.
 For new inline links being added to existing pages.
+For non-text elements from Phase 1, state the handling of each item explicitly: which page **structural visuals** get reconstructed on (mermaid/table); which page **raster images** get downloaded to `attachment/` (relative to the note) and embedded on — including **existing** pages that need enriching. Don't leave it implicit in the "one sentence of main content".
 
 **Migration case:** if a file already exists and is only being renamed/relocated (e.g. from
 `concepts/pod.md` to `02 Architecture/02 Pod.md`), the proposal must include the old→new mapping:
@@ -280,6 +285,12 @@ If changes are needed → revise the proposal, present again, ask for approval a
 - Content = a synthesis of the source, not a copy-paste; distill and rewrite
 - Inline wikilinks in body text, on the first mention of a concept
 - **No See Also section or link list**
+- **Reconstruct structural visuals from Phase 1** — flow/relationship diagrams → native Obsidian mermaid (``` mermaid flowchart ```), tables → markdown tables; don't just summarize them into prose when the visual form carries structural information (sequence, branching, side-by-side comparison)
+- **Raster images from Phase 1 (photos/screenshots) → download & embed, don't hotlink and don't drop:**
+  - Save to `attachment/` relative to the note (vault convention), **not** an external hotlink URL (fragile, can rot). For sources that hotlink to a CDN, download first (e.g. `curl -L`), detect the type via magic bytes, and give the file a descriptive name.
+  - Embed with `![[name.png|width]]` followed by a one-line italic caption; cap the width (~360–560px) to keep the page tidy. Verify the number of embeds = the number of files present.
+  - **Read the image before placing it** when the caption/placement needs to be accurate — don't guess the contents from the filename or context alone.
+  - Third-party photos (from someone else's repo/article): fine as a reference for personal notes, but **record the attribution** and remind the user that for content they publish, their own images are better.
 - If a lens is active: add the `lens` field to frontmatter and follow the lens's quality standards
 
 ##### Rules Specific to Code-Project Sources
@@ -471,4 +482,5 @@ When `/obs-wiki:ingest` is called for the first time and `wiki/` doesn't exist y
   working directory, not always at vault root. If the user `cd`s into
   `technology/quarkus/` and then runs ingest, the wiki is created at
   `technology/quarkus/wiki/`. Never assume vault root without checking the working directory.
-- **Synthesized marking** — once an ingest is done, add `synthesized: true` to the source's frontmatter
+- **Synthesized marking** — once an ingest is done, add `synthesized: true` to the source's frontmatter (except for sources outside the vault / external repos — just note them in the Log)
+- **Images = download + embed, not reconstruct** — raster photos/screenshots are saved to `attachment/` (relative to the note) and embedded with `![[...|width]]` + a caption; don't hotlink external URLs, don't drop them. An image still enriches an **existing** page even when its text already overlaps. Only structural visuals (diagrams/tables) get reconstructed into mermaid/markdown.
